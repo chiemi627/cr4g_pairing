@@ -1,12 +1,18 @@
 
-<table>
 <% if pairs then %>
-   <% pairs.each do |pair| %>
-     <tr>
-     <% pair.each do |p| %>
-       <td><%= p %></td>
-     <% end %>
-     </tr>
-   <%  end %>
+ <div id="result">
+ <% pairs.each_slice(10) do |block| %>
+  <div class="pairing-result">
+  <table>
+     <% block.each do |pair| %>
+       <tr>
+        <% pair.each do |p| %>
+          <td><%= p %></td>
+        <% end %>
+       </tr>
+     <%  end %>
+  </table>
+  </div>
+ <% end %>
+ </div>
 <% end %>
-</table>
