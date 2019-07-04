@@ -6,9 +6,5 @@ class PairingsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
-  test "should get generate" do
-    get pairings_generate_url
-    assert_response :success
-  end
 
 end

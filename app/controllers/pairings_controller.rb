@@ -85,23 +85,20 @@ class PairingsController < ApplicationController
 
   def load_google_spreadsheet(key)
     session = GoogleDrive::Session.from_config("google_drive_config.json")
-    sheets = session.spreadsheet_by_key(key).worksheets[0]
-    sheets
+    sheet = session.spreadsheet_by_key(key).worksheets[0]
+    sheet
   end
 
   def readdata_from_google_spreadsheet(key)
     participants = []
     mentors = []
     sheet = load_google_spreadsheet(key)
-    (1..sheet.num_rows).each do |row|
-      next if sheet[row,1].blank?
-      id = sheet[row,1].to_i
-      next if id==0 #to_iは不正な値を0にして返す。IDは1以上の整数なので0の場合はおかしな行と判定
-      unless sheet[row,3]=="1"
-        participants.push id
-        mentors.push id if sheet[row,2]=="1"
+    sheet.rows.each { |row|
+      if valid?(row) && participate?(row)
+        participants.push getID(row)
+        mentors.push getID(row) if mentor?(row)
       end
-    end      
+    }
     [participants,mentors]
   end
 
@@ -109,15 +106,28 @@ class PairingsController < ApplicationController
     participants = []
     mentors = []
     CSV.foreach(filename, headers: true) do |row|
-      next if row[0].blank?
-      id = row[0].to_i
-      next if id==0 #to_iは不正な値を0にして返す。IDは1以上の整数なので0の場合はおかしな行と判定
-      unless row[2]=="1"
-        participants.push id
-        mentors.push id if row[1]=="1"
+      if valid?(row) && participate?(row)
+        participants.push getID(row)
+        mentors.push getID(row) if mentor?(row)
       end
     end
     [participants,mentors]
+  end
+
+  def valid?(row)
+    !( row[0].blank? || row[0].to_i == 0)  
+  end
+
+  def participate?(row)
+    !(row[2]=="1")
+  end
+
+  def mentor?(row)
+    row[1]=="1"
+  end
+
+  def getID(row)
+    row[0].to_i
   end
 
 end
