@@ -54,17 +54,17 @@ class PairingsController < ApplicationController
     end
   end
 
-  def pairing_with_mentors(participants,mentors)
+  def pairing_with_mentors(nonmentors,mentors)
     pairs = []
 
-    nonmentors_shfl = (participants - mentors).shuffle
+    nonmentors_shfl = nonmentors.shuffle
     mentors_shfl = mentors.shuffle
 
     [mentors_shfl.length,nonmentors_shfl.length].min.times {
       pairs.push [nonmentors_shfl.shift,mentors_shfl.shift].sort
     }
     
-    rest = participants - pairs.flatten
+    rest = nonmentors_shfl + mentors_shfl
 
     rest.shuffle.each_slice(2) do |x, y|
       if y!=nil
@@ -90,28 +90,26 @@ class PairingsController < ApplicationController
   end
 
   def readdata_from_google_spreadsheet(key)
-    participants = []
+    nonmentors = []
     mentors = []
     sheet = load_google_spreadsheet(key)
     sheet.rows.each { |row|
       if valid?(row) && participate?(row)
-        participants.push getID(row)
-        mentors.push getID(row) if mentor?(row)
+        mentor?(row) ? mentors.push(getID(row)) : nonmentors.push(getID(row))
       end
     }
-    [participants,mentors]
+    [nonmentors,mentors]
   end
 
   def readdata_from_csv(filename)
-    participants = []
+    nonmentors = []
     mentors = []
     CSV.foreach(filename, headers: true) do |row|
       if valid?(row) && participate?(row)
-        participants.push getID(row)
-        mentors.push getID(row) if mentor?(row)
+        mentor?(row) ? mentors.push(getID(row)) : nonmentors.push(getID(row))
       end
     end
-    [participants,mentors]
+    [nonmentors,mentors]
   end
 
   def valid?(row)
