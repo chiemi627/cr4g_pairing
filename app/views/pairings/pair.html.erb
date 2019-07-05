@@ -1,6 +1,7 @@
 <div id="description">
   ランダムにペアプログラミングの組を作ります。<br/>
   参加者・メンター・不参加の別をCSVファイルでアップしてください。
+  <%= link_to "sample.csv", "/sample.csv" %>
 </div>
 
 <%= form_with url: pairings_pair_path, id: "upLoad", local: true do |f| %>
