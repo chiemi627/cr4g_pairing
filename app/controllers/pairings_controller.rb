@@ -61,14 +61,14 @@ class PairingsController < ApplicationController
     mentors_shfl = mentors.shuffle
 
     [mentors_shfl.length,nonmentors_shfl.length].min.times {
-      pairs.push [nonmentors_shfl.shift,mentors_shfl.shift].sort
+      pairs.push [nonmentors_shfl.shift,mentors_shfl.shift].sort_by{|p| p[0]}
     }
     
     rest = nonmentors_shfl + mentors_shfl
 
     rest.shuffle.each_slice(2) do |x, y|
       if y!=nil
-        pairs.push [x,y].sort
+        pairs.push [x,y].sort_by{|p| p[0]}
       else
         pairs.push [x,y]
       end
@@ -78,7 +78,7 @@ class PairingsController < ApplicationController
       pairs.pop
     end
     pairs.sort_by! { |pair|
-      pair[0]
+      pair[0][0]
     }
     return pairs
   end
@@ -95,7 +95,7 @@ class PairingsController < ApplicationController
     sheet = load_google_spreadsheet(key)
     sheet.rows.each { |row|
       if valid?(row) && participate?(row)
-        mentor?(row) ? mentors.push(getID(row)) : nonmentors.push(getID(row))
+        mentor?(row) ? mentors.push(getInfo(row)) : nonmentors.push(getInfo(row))
       end
     }
     [nonmentors,mentors]
@@ -106,7 +106,7 @@ class PairingsController < ApplicationController
     mentors = []
     CSV.foreach(filename, headers: true) do |row|
       if valid?(row) && participate?(row)
-        mentor?(row) ? mentors.push(getID(row)) : nonmentors.push(getID(row))
+        mentor?(row) ? mentors.push(getInfo(row)) : nonmentors.push(getInfo(row))
       end
     end
     [nonmentors,mentors]
@@ -126,6 +126,10 @@ class PairingsController < ApplicationController
 
   def getID(row)
     row[0].to_i
+  end
+
+  def getInfo(row)
+    [row[0].to_i,row[3]]
   end
 
 end

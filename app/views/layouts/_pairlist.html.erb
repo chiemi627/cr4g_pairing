@@ -1,13 +1,13 @@
 
 <% if pairs then %>
  <div id="result">
- <% pairs.each_slice(10) do |block| %>
+ <% pairs.each_slice(8) do |block| %>
   <div class="pairing-result">
   <table>
      <% block.each do |pair| %>
        <tr>
         <% pair.each do |p| %>
-          <td><%= p %></td>
+          <td><%= p[0] %><br><span class="username"><%=p[1]%></span></td>
         <% end %>
        </tr>
      <%  end %>
