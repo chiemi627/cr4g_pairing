@@ -1,8 +1,9 @@
 Rails.application.routes.draw do
-  root 'pairings#index'
+  root 'pairings#pair'
 
   get 'pairings/save'
   get 'pairings/show/:id', to: 'pairings#show'
+  get 'wit19', to: 'pairings#index'
   get ':id', to:'pairings#show'
 
   get 'pairings/pair'
