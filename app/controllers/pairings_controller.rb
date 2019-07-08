@@ -9,10 +9,14 @@ class PairingsController < ApplicationController
     if params[:account] && Event.exists?(account: params[:account])
       sheetURL = Event.find_by(account: params[:account])[:googlesheet]
       nonmentors,mentors = readdata_from_google_spreadsheet(sheetURL)
+      if nonmentors.size + mentors.size == 0
+        flash.now[:danger]="データを正しく読み込めませんでした"
+        render "index" and return
+      end
       @data[:pairs] = pairing_with_mentors(nonmentors,mentors)    
       session[:data] = @data      
     else
-      flash.now[:warning]="イベントが登録されていません"
+      flash.now[:danger]="イベントが登録されていません"
       redirect_to root_path and return
     end
   end
@@ -21,12 +25,12 @@ class PairingsController < ApplicationController
     @data = {}
     if params[:file] 
       if params[:file].content_type.downcase != "text/csv"
-        flash.now[:warning]="CSVファイルを読み込んでください"      
+        flash.now[:danger]="CSVファイルを読み込んでください"      
         render "pair" and return
       end
       nonmentors,mentors = readdata_from_csv(params[:file].path)
       if nonmentors.size + mentors.size == 0
-        flash.now[:warning]="データを正しく読み込めませんでした"
+        flash.now[:danger]="データを正しく読み込めませんでした"
         render "pair" and return
       end
       @data[:pairs] = pairing_with_mentors(nonmentors,mentors)    
@@ -48,7 +52,7 @@ class PairingsController < ApplicationController
         name = SecureRandom.urlsafe_base64(8)
         savedata = PairingLog.new(name:name, data:session[:data].to_json)
         savedata.save
-        flash.now[:warning] = "名前が有効でなかったので"+root_url(only_path: false)+name+"で保存しました。"
+        flash.now[:danger] = "名前が有効でなかったので"+root_url(only_path: false)+name+"で保存しました。"
       end
       @data = session[:data].with_indifferent_access
       render "show"
@@ -70,6 +74,11 @@ class PairingsController < ApplicationController
 
   def pairing_with_mentors(nonmentors,mentors)
     pairs = []
+
+    if nonmentors.size+mentors.size<2
+      flash.now[:danger] = "ペアを組める人数がいません"
+      return pairs
+    end
 
     nonmentors_shfl = nonmentors.shuffle
     mentors_shfl = mentors.shuffle
@@ -98,8 +107,13 @@ class PairingsController < ApplicationController
   end
 
   def load_google_spreadsheet(key)
-    session = GoogleDrive::Session.from_config("google_drive_config.json")
-    sheet = session.spreadsheet_by_key(key).worksheets[0]
+    begin
+      session = GoogleDrive::Session.from_config("google_drive_config.json")
+      sheet = session.spreadsheet_by_key(key).worksheets[0]
+    rescue
+      flash[:danger]=error.message
+      return nil
+    end
     sheet
   end
 
@@ -107,11 +121,13 @@ class PairingsController < ApplicationController
     nonmentors = []
     mentors = []
     sheet = load_google_spreadsheet(key)
-    sheet.rows.each { |row|
-      if valid?(row) && participate?(row)
-        mentor?(row) ? mentors.push(getInfo(row)) : nonmentors.push(getInfo(row))
-      end
-    }
+    unless sheet.nil? 
+      sheet.rows.each { |row|
+        if valid?(row) && participate?(row)
+          mentor?(row) ? mentors.push(getInfo(row)) : nonmentors.push(getInfo(row))
+        end
+      }
+    end
     [nonmentors,mentors]
   end
 
@@ -125,7 +141,7 @@ class PairingsController < ApplicationController
         end
       end
     rescue
-      flash.now[:warning]="データを正しく読み込めませんでした"      
+      flash.now[:danger]="データを正しく読み込めませんでした"      
     end
     [nonmentors,mentors]
   end

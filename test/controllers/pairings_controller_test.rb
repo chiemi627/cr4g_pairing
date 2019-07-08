@@ -7,4 +7,5 @@ class PairingsControllerTest < ActionDispatch::IntegrationTest
     assert_select "title","Pairing for Coderetreat"
   end
 
+
 end

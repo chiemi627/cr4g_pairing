@@ -13,7 +13,8 @@
   <% end %>
 </div>
 <%= render 'layouts/pairlist',  pairs: @data[:pairs] %>
-
-<%= form_tag pairings_save_path, method: :get do %>
-  <%= text_field_tag :name %> <%= submit_tag "Save" %>
+<% if @data[:pairs].size>0 %>
+  <%= form_tag pairings_save_path, method: :get do %>
+    <%= text_field_tag :name %> <%= submit_tag "Save" %>
+  <% end %>
 <% end %>
