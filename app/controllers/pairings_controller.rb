@@ -37,8 +37,14 @@ class PairingsController < ApplicationController
         name = params[:name]
       end
       savedata = PairingLog.new(name:name, data:session[:data].to_json)
-      savedata.save
-      flash.now[:success] = "The pairing data is saved to "+root_url(only_path: false) + name
+      if savedata.save
+        flash.now[:success] = "The pairing data is saved to "+root_url(only_path: false) + name
+      else
+        name = SecureRandom.urlsafe_base64(8)
+        savedata = PairingLog.new(name:name, data:session[:data].to_json)
+        savedata.save
+        flash.now[:warning] = "名前が有効でなかったので"+root_url(only_path: false)+name+"で保存しました。"
+      end
       @data = session[:data].with_indifferent_access
       render "show"
     end
