@@ -1,22 +1,16 @@
 ## Coderetreat でペアプロの相手を適当に決める
 
-### ファイル一覧
-* Dockerfile : railsコンテナ(web)用の設定(ひとまずrubyを入れる)
-* docker-compose.yml : railsコンテナ(web)とpostgresqlコンテナ（db)の設定
-* .env: パスワードファイル（パスワードは適当に変えてね）
+## 使い方
+方法1: CSVファイルを読み込んで使う
+http://(hostname)
+にアクセスし、CSVファイルを読み込ませれば適当に割り振ります。
 
-### 使い方
-Dockerが入っていることが前提です。
+方法2: Google spreadsheetを使う
+http://(hostname)/event/new
+にアクセスし、以下の情報を登録します。
+1. イベント用のアカウント（英数字でお願いします。URLに使用します）
+2. イベント名（日本語でも大丈夫）
+3. Google spreadsheetのID（読み込み可能な状態にしておいてください）
 
-1. ビルドします
-> % docker-compose build
-2. データベース設定をする（config/database.ymlは適当に書き換えてね）
-> % cp config-database.yml config/database.yml
-3. railsサーバを立ち上げる
-> * % docker-compose up
-> * (Ctrl-Cでプロセスを落とす)
-4. データベースを作る
-> * % docker-compose run web rails db:create
-> * % docker-compose run web rails db:migrate
-5. railsサーバを立ち上げる
-> % docker-compose up
+そのあとは http://(hostname)/event/(アカウント名) にアクセスすれば、google spreadsheetを読み込んでペアリングします。
+
