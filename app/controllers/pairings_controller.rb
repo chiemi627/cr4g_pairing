@@ -6,8 +6,11 @@ class PairingsController < ApplicationController
 
   def index
     @data = {}
-
-    participants,mentors = readdata_from_google_spreadsheet("1TZCxBByvUiXRt71v8cQsVkdI356kAg19Gsh3U_OSs30")
+    sheetURL = "1TZCxBByvUiXRt71v8cQsVkdI356kAg19Gsh3U_OSs30"
+    if params[:account]
+      sheetURL = Event.find_by(account: params[:account])[:googlesheet]
+    end
+    participants,mentors = readdata_from_google_spreadsheet(sheetURL)
     @data[:pairs] = pairing_with_mentors(participants,mentors)    
     session[:data] = @data      
   end

@@ -1,0 +1,17 @@
+<h1>イベント作成</h1>
+
+<%= form_with model: Event.new, url: {action: :create}, local: true do |f| %>
+<div>
+ <%= f.label :account %>
+ <%= f.text_field :account, id: 'event_account' %>
+</div>
+<div>
+ <%= f.label :name %>
+ <%= f.text_field :name, id: 'event_name' %>
+</div>
+<div>
+ <%= f.label :googlesheet %>
+ <%= f.text_field :googlesheet, id: 'event_googlesheet' %>
+</div>
+ <%= f.submit %>
+<% end %>
