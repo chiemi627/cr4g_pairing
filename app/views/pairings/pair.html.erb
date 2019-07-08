@@ -15,6 +15,7 @@
 
 <% if @data[:pairs] %>
 <%= form_tag pairings_save_path, method: :get do %>
+  このpairingを保存する場合は以下のテキスト欄に英数字を入力してsaveボタンを押してください。
   <%= text_field_tag :name %> <%= submit_tag "Save" %>
 <% end %>
 <% end %>
