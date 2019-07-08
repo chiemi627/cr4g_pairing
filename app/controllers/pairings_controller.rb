@@ -138,6 +138,9 @@ class PairingsController < ApplicationController
   end
 
   def getInfo(row)
+    if row[1]==""
+      return [row[0],"(noname)"]
+    end
     [row[0].to_i,row[1]]
   end
 
