@@ -9,7 +9,7 @@ http://cr4g.heroku.com
 
 ### 方法2: Google spreadsheetを使う
 
-http://cr4g.heroku.com/event/new
+http://cr4g.heroku.com/events/new
 にアクセスし、以下の情報を登録します。
 1. イベント用のアカウント（英数字でお願いします。URLに使用します）
 2. イベント名（日本語でも大丈夫）
