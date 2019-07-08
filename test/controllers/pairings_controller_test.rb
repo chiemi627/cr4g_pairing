@@ -1,10 +1,10 @@
 require 'test_helper'
 
 class PairingsControllerTest < ActionDispatch::IntegrationTest
-  test "should get index" do
-    get pairings_index_url
+  test "root_pathが表示できる" do
+    get pairings_pair_url
     assert_response :success
+    assert_select "title","Pairing for Coderetreat"
   end
-
 
 end

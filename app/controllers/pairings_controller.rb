@@ -8,25 +8,28 @@ class PairingsController < ApplicationController
     @data = {}
     if params[:account] && Event.exists?(account: params[:account])
       sheetURL = Event.find_by(account: params[:account])[:googlesheet]
-      participants,mentors = readdata_from_google_spreadsheet(sheetURL)
-      @data[:pairs] = pairing_with_mentors(participants,mentors)    
+      nonmentors,mentors = readdata_from_google_spreadsheet(sheetURL)
+      @data[:pairs] = pairing_with_mentors(nonmentors,mentors)    
       session[:data] = @data      
     else
-      flash[:warning]="イベントが登録されていません"
-      redirect_to root_path
+      flash.now[:warning]="イベントが登録されていません"
+      redirect_to root_path and return
     end
   end
 
   def pair    
     @data = {}
-
     if params[:file] 
       if params[:file].content_type.downcase != "text/csv"
-        flash[:error] = "CSVファイルをアップロードしてください"
-        render
+        flash.now[:warning]="CSVファイルを読み込んでください"      
+        render "pair" and return
       end
-      participants,mentors = readdata_from_csv(params[:file].path)
-      @data[:pairs] = pairing_with_mentors(participants,mentors)    
+      nonmentors,mentors = readdata_from_csv(params[:file].path)
+      if nonmentors.size + mentors.size == 0
+        flash.now[:warning]="データを正しく読み込めませんでした"
+        render "pair" and return
+      end
+      @data[:pairs] = pairing_with_mentors(nonmentors,mentors)    
     end
     session[:data] = @data    
   end
@@ -115,10 +118,14 @@ class PairingsController < ApplicationController
   def readdata_from_csv(filename)
     nonmentors = []
     mentors = []
-    CSV.foreach(filename, headers: true) do |row|
-      if valid?(row) && participate?(row)
-        mentor?(row) ? mentors.push(getInfo(row)) : nonmentors.push(getInfo(row))
+    begin
+      CSV.foreach(filename, headers: true) do |row|
+        if valid?(row) && participate?(row)
+          mentor?(row) ? mentors.push(getInfo(row)) : nonmentors.push(getInfo(row))
+        end
       end
+    rescue
+      flash.now[:warning]="データを正しく読み込めませんでした"      
     end
     [nonmentors,mentors]
   end
