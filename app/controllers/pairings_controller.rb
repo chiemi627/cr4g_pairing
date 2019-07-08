@@ -121,7 +121,7 @@ class PairingsController < ApplicationController
   end
 
   def mentor?(row)
-    row[1]=="1"
+    row[3]=="1"
   end
 
   def getID(row)
@@ -129,7 +129,7 @@ class PairingsController < ApplicationController
   end
 
   def getInfo(row)
-    [row[0].to_i,row[3]]
+    [row[0].to_i,row[1]]
   end
 
 end
