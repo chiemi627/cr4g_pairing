@@ -12,7 +12,18 @@ class PairingsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "table > tr", :count => 2
     assert_select "table > tr > td", :count=>5
-
   end
 
+  test "jpgファイルを読み込むとエラーメッセージが出る" do
+    post pairings_pair_url, params: {file: fixture_file_upload('files/sample.jpg','image/jpg')}
+    assert_response :success
+    assert_match "CSVファイルを読み込んでください", flash[:danger]
+  end
+
+  test "拡張子がcsvなjpgファイルを読み込むとエラーメッセージが出る" do
+    post pairings_pair_url, params: {file: fixture_file_upload('files/sample-jpg.csv','text/csv')}
+    assert_response :success
+    assert_match "データを正しく読み込めませんでした", flash[:danger]
+  end
+  
 end
