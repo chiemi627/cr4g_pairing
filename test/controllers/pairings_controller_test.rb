@@ -25,5 +25,23 @@ class PairingsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_match "データを正しく読み込めませんでした", flash[:danger]
   end
-  
+
+  test "出席者(id=3)はpairingリストの中に入る" do
+    post pairings_pair_url, params: {file: fixture_file_upload('files/sample.csv','text/csv')}
+    assert_select "table > tr > td#3",1  
+  end
+
+  test "欠席者(id=4)はpairingリストの中に入らない" do
+    post pairings_pair_url, params: {file: fixture_file_upload('files/sample.csv','text/csv')}
+    assert_select "table > tr > td#4", false
+  end
+
+  test "id=2とid=3はメンター同士なのでpairingされない" do
+    10.times {
+      post pairings_pair_url, params: {file: fixture_file_upload('files/sample.csv','text/csv')}
+      assert_select "td#2 + td#3", false  
+    }
+  end
+
+
 end

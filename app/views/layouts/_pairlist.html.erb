@@ -7,7 +7,7 @@
      <% block.each do |pair| %>
        <tr>
         <% pair.each do |p| %>
-          <td><%= p[0] %><br><span class="username"><%=p[1]%></span></td>
+          <td id=<%=p[0]%>><%= p[0] %><br><span class="username"><%=p[1]%></span></td>
         <% end %>
        </tr>
      <%  end %>
