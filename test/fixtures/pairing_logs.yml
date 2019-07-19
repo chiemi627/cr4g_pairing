@@ -1,9 +1,11 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  name: 
+  name: s1
   data: 
+  event: cr4g
 
 two:
-  name: 
+  name: s2
   data: 
+  event: cr4g
