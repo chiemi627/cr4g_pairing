@@ -1,11 +1,12 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
+
 one:
   name: s1
-  data: 
+  data: '{"pairs": [[1,3],[2,4]]}'
   event: cr4g
 
 two:
   name: s2
-  data: 
+  data: '{"pairs": [[1,4],[2,3]]}'
   event: cr4g
