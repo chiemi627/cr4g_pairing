@@ -16,4 +16,10 @@ class PairingLog < ApplicationRecord
         }
         partners
     end
+
+    def canBePair(event,x,y)
+        partners = past_partners(event,x)
+        not partners.include?(y)
+    end
+
 end
